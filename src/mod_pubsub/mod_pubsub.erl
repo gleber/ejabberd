@@ -3814,6 +3814,9 @@ itemsEls(Items) ->
 	{xmlelement, "item", itemAttr(ItemId), Payload}
     end, Items).
 
+add_message_type({xmlelement, "message", Attrs, [El]}, chat) ->
+    io:format("~p~n", [El]),
+    {xmlelement, "message", [{"type", "chat"}|Attrs], [El]};
 add_message_type({xmlelement, "message", Attrs, Els}, Type) ->
     {xmlelement, "message", [{"type", Type}|Attrs], Els};
 add_message_type(XmlEl, _Type) ->
