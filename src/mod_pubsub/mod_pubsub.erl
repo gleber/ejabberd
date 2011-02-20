@@ -3814,13 +3814,20 @@ itemsEls(Items) ->
 	{xmlelement, "item", itemAttr(ItemId), Payload}
     end, Items).
 
-add_message_type({xmlelement, "message", Attrs, [El]}, chat) ->
-    io:format("~p~n", [El]),
-    {xmlelement, "message", [{"type", "chat"}|Attrs], [El]};
+add_message_type({xmlelement, "message", Attrs, [El]} = Stanza, "chat") ->
+    io:format("~p~n", [Stanza]),
+    El2 = {xmlelement,"body",[],[{xmlcdata,get_cdata(El)}]},
+    {xmlelement, "message", [{"from", "pub@first.lan"}, {"type", "chat"}|Attrs], [El2]};
 add_message_type({xmlelement, "message", Attrs, Els}, Type) ->
     {xmlelement, "message", [{"type", Type}|Attrs], Els};
 add_message_type(XmlEl, _Type) ->
     XmlEl.
+
+get_cdata({xmlelement, _, _, Elements}) ->
+    [ get_cdata(E) || E <- Elements ];
+get_cdata({xmlcdata, CData}) ->
+    CData.
+
 
 %% Place of <headers/> changed at the bottom of the stanza
 %% cf. http://xmpp.org/extensions/xep-0060.html#publisher-publish-success-subid
